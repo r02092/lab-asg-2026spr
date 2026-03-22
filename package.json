@@ -1,5 +1,10 @@
 {
 	"$schema": "https://json.schemastore.org/package.json",
+	"dependencies": {
+		"@types/three": "^0.161.0",
+		"mind-ar": "^1.2.5",
+		"three": "^0.161.0"
+	},
 	"devDependencies": {
 		"@eslint/css": "^1.0.0",
 		"@eslint/js": "^10.0.1",
