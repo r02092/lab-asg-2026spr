@@ -8,7 +8,6 @@ const loadFile = async (path: string) => {
 const load = async () => {
 	const name = location.search.slice(1);
 	const imageTargetSrc = await loadFile(`./dynamic/${name}.mind`);
-	const imageSrc = await loadFile(`./dynamic/${name}.png`);
 	const mindarThree = new MindARThree({
 		container: document.getElementById("container"),
 		imageTargetSrc: imageTargetSrc,
@@ -22,20 +21,54 @@ const load = async () => {
 		await mindarThree.start();
 		update();
 	};
-	const image = new Image();
-	const texture = new THREE.TextureLoader().load(imageSrc);
-	texture.colorSpace = THREE.SRGBColorSpace;
-	image.addEventListener("load", () => {
-		mindarThree.addAnchor(0).group.add(
-			new THREE.Mesh(
-				new THREE.PlaneGeometry(1, image.naturalHeight / image.naturalWidth),
-				new THREE.MeshBasicMaterial({
-					map: texture,
-				}),
-			),
+	const createMesh = (texture: THREE.Texture, size: number) => {
+		texture.colorSpace = THREE.SRGBColorSpace;
+		return new THREE.Mesh(
+			new THREE.PlaneGeometry(1, size),
+			new THREE.MeshBasicMaterial({
+				map: texture,
+			}),
 		);
-		start();
-	});
-	image.src = imageSrc;
+	};
+	switch (name) {
+		case "tosayamada": {
+			const video = document.createElement("video");
+			video.src = await loadFile(`./dynamic/${name}.mp4`);
+			video.load();
+			video.muted = true;
+			const anchor = mindarThree.addAnchor(0);
+			anchor.onTargetFound = () => video.play();
+			anchor.onTargetLost = () => {
+				video.pause();
+				video.currentTime = 0;
+			};
+			video.addEventListener("loadedmetadata", () => {
+				const mesh = createMesh(
+					new THREE.VideoTexture(video),
+					video.videoHeight / video.videoWidth,
+				);
+				mesh.position.set(0, 65155 / 544768, 0);
+				anchor.group.add(mesh);
+			});
+			start();
+			break;
+		}
+		default: {
+			const imageSrc = await loadFile(`./dynamic/${name}.png`);
+			const image = new Image();
+			image.addEventListener("load", () => {
+				mindarThree
+					.addAnchor(0)
+					.group.add(
+						createMesh(
+							new THREE.TextureLoader().load(imageSrc),
+							image.naturalHeight / image.naturalWidth,
+						),
+					);
+				start();
+			});
+			image.src = imageSrc;
+		}
+	}
 };
 load();
