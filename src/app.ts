@@ -7,10 +7,9 @@ const loadFile = async (path: string) => {
 };
 const load = async () => {
 	const name = location.search.slice(1);
-	const imageTargetSrc = await loadFile(`./dynamic/${name}.mind`);
 	const mindarThree = new MindARThree({
 		container: document.getElementById("container"),
-		imageTargetSrc: imageTargetSrc,
+		imageTargetSrc: await loadFile(`./dynamic/${name}.mind`),
 	});
 	const {renderer, scene, camera} = mindarThree;
 	const update = () => {
