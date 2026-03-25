@@ -32,7 +32,7 @@ const load = async () => {
 	switch (name) {
 		case "tosayamada": {
 			const video = document.createElement("video");
-			video.src = await loadFile(`./dynamic/${name}.mp4`);
+			video.src = await loadFile(`./dynamic/${name}.mkv`);
 			video.load();
 			video.muted = true;
 			const anchor = mindarThree.addAnchor(0);
@@ -53,7 +53,7 @@ const load = async () => {
 			break;
 		}
 		default: {
-			const imageSrc = await loadFile(`./dynamic/${name}.png`);
+			const imageSrc = await loadFile(`./dynamic/${name}.webp`);
 			const image = new Image();
 			image.addEventListener("load", () => {
 				mindarThree
