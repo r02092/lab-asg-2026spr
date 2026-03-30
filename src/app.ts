@@ -24,6 +24,13 @@ const locarCamera = new THREE.PerspectiveCamera(
 	100000,
 );
 const locar = new LocAR.LocationBased(locarScene, locarCamera);
+const deviceOrientationControls = new LocAR.DeviceOrientationControls(
+	locarCamera,
+);
+deviceOrientationControls.on("deviceorientationgranted", e =>
+	e.target.connect(),
+);
+deviceOrientationControls.init();
 locar.fakeGps(133.685, 33.607);
 for (const i of spots) {
 	const canvas = document.createElement("canvas");
@@ -60,6 +67,7 @@ const load = async () => {
 		renderer.render(locarScene, locarCamera);
 		renderer.clearDepth();
 		renderer.render(scene, camera);
+		deviceOrientationControls.update();
 		requestAnimationFrame(update);
 	};
 	const start = async () => {
