@@ -1,14 +1,16 @@
 body {
-	margin: 0;
 	position: relative;
+	margin: 0;
 }
 #container {
-	width: 100vw;
 	height: 100vh;
+	position: relative;
+	overflow: hidden;
 }
 #credit {
 	position: absolute;
 	right: 0;
 	bottom: 0;
+	padding: 4px;
 	background: #fff9;
 }
