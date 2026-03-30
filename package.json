@@ -2,6 +2,7 @@
 	"$schema": "https://json.schemastore.org/package.json",
 	"dependencies": {
 		"@types/three": "^0.161.0",
+		"locar": "^0.1.8",
 		"mind-ar": "^1.2.5",
 		"three": "^0.161.0"
 	},

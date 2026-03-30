@@ -1,10 +1,44 @@
+import * as LocAR from "locar";
 import * as THREE from "three";
 import {MindARThree} from "mind-ar/dist/mindar-image-three.prod.js";
+import spots from "./spots.json";
 
 const files = import.meta.glob("./dynamic/*");
 const loadFile = async (path: string) => {
 	return ((await files[path]()) as {default: string}).default;
 };
+const locarScene = new THREE.Scene();
+const locarCamera = new THREE.PerspectiveCamera(
+	60,
+	window.innerWidth / window.innerHeight,
+	1,
+	100000,
+);
+const locar = new LocAR.LocationBased(locarScene, locarCamera);
+locar.fakeGps(133.685, 33.607);
+for (const i of spots) {
+	const canvas = document.createElement("canvas");
+	const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+	ctx.canvas.width = 2048;
+	ctx.canvas.height = 256;
+	ctx.fillStyle = "#fff";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	ctx.fillStyle = "#000";
+	ctx.font = "256px sans-serif";
+	ctx.fillText(
+		i.name,
+		(ctx.canvas.width - ctx.measureText(i.name).width) / 2,
+		(ctx.canvas.height + ctx.measureText(i.name).actualBoundingBoxAscent) / 2,
+	);
+	const sprite = new THREE.Sprite(
+		new THREE.SpriteMaterial({
+			map: new THREE.CanvasTexture(canvas),
+			sizeAttenuation: false,
+		}),
+	);
+	sprite.scale.set(0.5, (ctx.canvas.height * 0.5) / ctx.canvas.width, 1);
+	locar.add(sprite, i.lng, i.lat);
+}
 const load = async () => {
 	const name = location.search.slice(1);
 	const mindarThree = new MindARThree({
@@ -12,7 +46,11 @@ const load = async () => {
 		imageTargetSrc: await loadFile(`./dynamic/${name}.mind`),
 	});
 	const {renderer, scene, camera} = mindarThree;
+	renderer.autoClearColor = false;
 	const update = () => {
+		renderer.clear();
+		renderer.render(locarScene, locarCamera);
+		renderer.clearDepth();
 		renderer.render(scene, camera);
 		requestAnimationFrame(update);
 	};
@@ -71,3 +109,15 @@ const load = async () => {
 	}
 };
 load();
+let mousedown = false,
+	lastX = -1;
+window.addEventListener("mousedown", () => (mousedown = true));
+window.addEventListener("mouseup", () => (mousedown = false));
+window.addEventListener("mousemove", e => {
+	if (mousedown) {
+		if (lastX >= 0) locarCamera.rotation.y += (e.clientX - lastX) / 1000;
+		lastX = e.clientX;
+	} else {
+		lastX = -1;
+	}
+});
