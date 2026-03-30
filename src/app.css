@@ -3,7 +3,7 @@ body {
 	margin: 0;
 }
 #container {
-	height: 100vh;
+	height: 100svh;
 	position: relative;
 	overflow: hidden;
 }
