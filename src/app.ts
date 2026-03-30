@@ -31,6 +31,7 @@ deviceOrientationControls.on("deviceorientationgranted", e =>
 	e.target.connect(),
 );
 deviceOrientationControls.init();
+locar.fakeGps(133.685, 33.607);
 locar.startGps();
 const elevZoom = 15;
 const elevTileSize = 256;
