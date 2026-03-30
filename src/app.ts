@@ -4,9 +4,18 @@ import {MindARThree} from "mind-ar/dist/mindar-image-three.prod.js";
 import spots from "./spots.json";
 
 const files = import.meta.glob("./dynamic/*");
-const loadFile = async (path: string) => {
-	return ((await files[path]()) as {default: string}).default;
+const loadFile = async (path: string) =>
+	((await files[path]()) as {default: string}).default;
+const createMesh = (texture: THREE.Texture, size: number) => {
+	texture.colorSpace = THREE.SRGBColorSpace;
+	return new THREE.Mesh(
+		new THREE.PlaneGeometry(1, size),
+		new THREE.MeshBasicMaterial({
+			map: texture,
+		}),
+	);
 };
+const name = location.search.slice(1);
 const locarScene = new THREE.Scene();
 const locarCamera = new THREE.PerspectiveCamera(
 	60,
@@ -40,7 +49,6 @@ for (const i of spots) {
 	locar.add(sprite, i.lng, i.lat);
 }
 const load = async () => {
-	const name = location.search.slice(1);
 	const mindarThree = new MindARThree({
 		container: document.getElementById("container"),
 		imageTargetSrc: await loadFile(`./dynamic/${name}.mind`),
@@ -57,15 +65,6 @@ const load = async () => {
 	const start = async () => {
 		await mindarThree.start();
 		update();
-	};
-	const createMesh = (texture: THREE.Texture, size: number) => {
-		texture.colorSpace = THREE.SRGBColorSpace;
-		return new THREE.Mesh(
-			new THREE.PlaneGeometry(1, size),
-			new THREE.MeshBasicMaterial({
-				map: texture,
-			}),
-		);
 	};
 	switch (name) {
 		case "tosayamada": {
@@ -111,8 +110,12 @@ const load = async () => {
 load();
 let mousedown = false,
 	lastX = -1;
-window.addEventListener("mousedown", () => (mousedown = true));
-window.addEventListener("mouseup", () => (mousedown = false));
+window.addEventListener("mousedown", () => {
+	mousedown = true;
+});
+window.addEventListener("mouseup", () => {
+	mousedown = false;
+});
 window.addEventListener("mousemove", e => {
 	if (mousedown) {
 		if (lastX >= 0) locarCamera.rotation.y += (e.clientX - lastX) / 1000;
