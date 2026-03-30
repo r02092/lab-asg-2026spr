@@ -32,28 +32,65 @@ deviceOrientationControls.on("deviceorientationgranted", e =>
 );
 deviceOrientationControls.init();
 locar.fakeGps(133.685, 33.607);
+const elevZoom = 15;
+const elevTileSize = 256;
 for (const i of spots) {
-	const canvas = document.createElement("canvas");
-	const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-	ctx.canvas.width = 2048;
-	ctx.canvas.height = 256;
-	ctx.fillStyle = "#fff";
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	ctx.fillStyle = "#000";
-	ctx.font = "256px sans-serif";
-	ctx.fillText(
+	const spCanvas = document.createElement("canvas");
+	const spCtx = spCanvas.getContext("2d") as CanvasRenderingContext2D;
+	spCtx.canvas.width = 2048;
+	spCtx.canvas.height = 256;
+	spCtx.fillStyle = "#fff";
+	spCtx.fillRect(0, 0, spCtx.canvas.width, spCtx.canvas.height);
+	spCtx.fillStyle = "#000";
+	spCtx.font = "256px sans-serif";
+	spCtx.fillText(
 		i.name,
-		(ctx.canvas.width - ctx.measureText(i.name).width) / 2,
-		(ctx.canvas.height + ctx.measureText(i.name).actualBoundingBoxAscent) / 2,
+		(spCtx.canvas.width - spCtx.measureText(i.name).width) / 2,
+		(spCtx.canvas.height + spCtx.measureText(i.name).actualBoundingBoxAscent) /
+			2,
 	);
 	const sprite = new THREE.Sprite(
 		new THREE.SpriteMaterial({
-			map: new THREE.CanvasTexture(canvas),
+			map: new THREE.CanvasTexture(spCanvas),
 			sizeAttenuation: false,
 		}),
 	);
-	sprite.scale.set(0.5, (ctx.canvas.height * 0.5) / ctx.canvas.width, 1);
-	locar.add(sprite, i.lng, i.lat);
+	sprite.scale.set(0.5, (spCtx.canvas.height * 0.5) / spCtx.canvas.width, 1);
+	const elevCanvas = document.createElement("canvas");
+	elevCanvas.width = elevCanvas.height = elevTileSize;
+	const elevCtx = elevCanvas.getContext("2d", {
+		willReadFrequently: true,
+	}) as CanvasRenderingContext2D;
+	const elevCoord = [
+		(i.lng + 180) / 360,
+		1 -
+			(Math.log(Math.tan(((Math.PI / 180) * i.lat) / 2 + Math.PI / 4)) /
+				Math.PI +
+				1) /
+				2,
+	].map(j => {
+		const worldCoord = j * 2 ** elevZoom;
+		const tileNum = Math.floor(worldCoord);
+		return {
+			tile: tileNum,
+			pixel: Math.floor(worldCoord * elevTileSize) - tileNum * elevTileSize,
+		};
+	});
+	const elevImg = new Image();
+	elevImg.src = `https://cyberjapandata.gsi.go.jp/xyz/dem5a_png/${elevZoom}/${elevCoord[0].tile}/${elevCoord[1].tile}.png`;
+	elevImg.setAttribute("crossorigin", "anonymous");
+	elevImg.addEventListener("load", () => {
+		elevCtx.drawImage(elevImg, 0, 0);
+		const {data} = elevCtx.getImageData(0, 0, elevTileSize, elevTileSize);
+		const idx = elevCoord[1].pixel * 1024 + elevCoord[0].pixel * 4;
+		const x = data[idx] * 65536 + data[idx + 1] * 256 + data[idx + 2];
+		locar.add(
+			sprite,
+			i.lng,
+			i.lat,
+			x < 8388608 ? x * 0.01 : x > 8388608 ? (x - 16777216) * 0.01 : undefined,
+		);
+	});
 }
 const load = async () => {
 	const mindarThree = new MindARThree({

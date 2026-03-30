@@ -1,7 +1,14 @@
 body {
 	margin: 0;
+	position: relative;
 }
 #container {
 	width: 100vw;
 	height: 100vh;
+}
+#credit {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	background: #fff9;
 }
