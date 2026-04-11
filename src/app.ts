@@ -243,6 +243,7 @@ const staNameMajor = {
 	yosansen: {},
 };
 const timeToMinute = (h: number, m: number) => (h < 4 ? h + 24 : h) * 60 + m;
+const oldGroups: THREE.Group<THREE.Object3DEventMap>[] = [];
 locar.on("gpsupdate", () => {
 	const loc = locar.getLastKnownLocation();
 	if (loc) {
@@ -273,6 +274,11 @@ locar.on("gpsupdate", () => {
 		const relLoc = locArray.map((e, i) => e - nearest.coords[0][i]);
 		const pathDist = Math.sqrt(pathDelta[0] ** 2 + pathDelta[1] ** 2);
 		const pathDeltaNormal = pathDelta.map(e => (e * 0.0005) / pathDist);
+		while (oldGroups.length) {
+			locarScene.remove(
+				oldGroups.shift() as THREE.Group<THREE.Object3DEventMap>,
+			);
+		}
 		if (
 			Math.sign(
 				(relLoc[1] - pathDeltaNormal[0]) * pathDelta[0] -
@@ -658,6 +664,7 @@ locar.on("gpsupdate", () => {
 				const dir = idx1 * 2 - 1;
 				group.rotation.y =
 					Math.atan2(pathDelta[0], pathDelta[1]) + (Math.PI / 2) * dir;
+				oldGroups.push(group);
 				locar.add(
 					group,
 					loc.longitude + (pathDeltaNormal[1] / 15) * dir,
