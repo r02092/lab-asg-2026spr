@@ -47,6 +47,9 @@ interface TimeTable {
 		};
 	};
 }
+interface StationNames {
+	[key: string]: {[key: number]: string};
+}
 
 const files = import.meta.glob("./dynamic/*");
 const loadFile = async (path: string) =>
@@ -211,7 +214,7 @@ const load = async () => {
 		}
 	}
 };
-const staNameMajor = {
+const staNameMajor: StationNames = {
 	dosansen: {
 		0: "高知",
 		10: "後免",
@@ -290,6 +293,10 @@ locar.on("gpsupdate", () => {
 			)
 		) {
 			const trains: [Train[], Train[]] = [[], []];
+			const via: {
+				line: string;
+				name: [[string, string][] | undefined, [string, string][] | undefined];
+			}[] = [];
 			const now = new Date();
 			const isDates = [
 				{
@@ -327,10 +334,6 @@ locar.on("gpsupdate", () => {
 			].map(e =>
 				e[now.getMonth() as 3 | 4 | 5 | 6 | 7 | 8].includes(now.getDate()),
 			);
-			const via: {
-				line: string;
-				name: [[string, string][] | undefined, [string, string][] | undefined];
-			}[] = [];
 			for (const i of nearest.position) {
 				const majorSta = Object.entries(staNameMajor[i.line]);
 				via.push({
@@ -450,17 +453,15 @@ locar.on("gpsupdate", () => {
 							} else break;
 						}
 						const timesLast = train.departure_times;
-						let termName = "不明";
+						let term = "不明";
 						if (timesLast) {
 							let termPos = timesLast.findLastIndex(f => f !== null);
 							route.push({line: line, station: termPos});
 							if (k) termPos = timesLast.length - termPos - 1;
 							termPos *= 2;
-							let termSta = Object.entries(staNameMajor[line]).find(
-								e => Number(e[0]) === termPos,
-							);
-							if (!termSta)
-								termSta = Object.entries(
+							term = staNameMajor[line][termPos];
+							if (!term)
+								term = (
 									{
 										dosansen: {4: "土佐一宮"},
 										dosansen_susaki: {40: "伊野"},
@@ -469,16 +470,15 @@ locar.on("gpsupdate", () => {
 										tosa_nakamurasen: {},
 										yodosen: {12: "近永", 24: "江川崎"},
 										yosansen: {112: "高松"},
-									}[line],
-								).find(e => Number(e[0]) === termPos);
-							if (termSta) termName = termSta[1];
+									} as StationNames
+								)[line][termPos];
 						}
 						trains[k].push({
 							time: pTime.slice(-5),
 							number: j[0],
 							type: type,
 							name: name,
-							term: termName,
+							term: term,
 							route: route,
 						});
 					}
@@ -505,16 +505,27 @@ locar.on("gpsupdate", () => {
 				titleCtx.textAlign = "center";
 				titleCtx.textBaseline = "ideographic";
 				if (via[0].name[idx1]) {
-					titleCtx.fillText(via[0].name[idx1][0][1], 64, 112, 128);
-					titleCtx.fillText("・", 160, 112, 64);
+					let viaAll = via[0].name[idx1]
+						.concat(
+							via.length - 1 && via[1].name[idx1] ? via[1].name[idx1] : [],
+						)
+						.map(e => e[1]);
+					viaAll = viaAll.filter((_, i) => !(i % (viaAll.length / 2)));
+					if (idx1) viaAll.reverse();
 					titleCtx.fillText(
-						via.length - 1 && via[1].name[idx1]
-							? via[1].name[idx1][0][1]
-							: via[0].name[idx1][1][1],
-						256,
+						viaAll.length
+							? viaAll[0]
+							: staNameMajor[nearest.position[0].line][
+									nearest.position[0].station
+								],
+						64,
 						112,
 						128,
 					);
+					if (viaAll.length > 1) {
+						titleCtx.fillText("・", 160, 112, 64);
+						titleCtx.fillText(viaAll[1], 256, 112, 128);
+					}
 				}
 				titleCtx.font = "48px sans-serif";
 				titleCtx.fillText("方面", 376, 112, 96);
