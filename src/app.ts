@@ -541,14 +541,14 @@ locar.on("gpsupdate", () => {
 				title.position.z = -0.15001;
 				title.rotation.x = title.rotation.z = Math.PI;
 				group.add(title);
-				const sorted = i.sort((a, b) => Number(a.time > b.time));
+				i.sort((a, b) => Number(a.time > b.time) * 2 - 1);
 				for (let j = 0; j < 3; j++) {
 					const canvas = document.createElement("canvas");
 					const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 					ctx.canvas.width = 1024;
 					ctx.canvas.height = 64;
-					if (j < sorted.length) {
-						const train = sorted[j];
+					if (j < i.length) {
+						const train = i[j];
 						ctx.font = "64px monospace";
 						ctx.fillStyle = "#fff";
 						ctx.textAlign = "right";
@@ -643,7 +643,7 @@ locar.on("gpsupdate", () => {
 						let notLast = false;
 						const term = train.route.at(-1);
 						if (term)
-							for (const k of sorted
+							for (const k of i
 								.slice(j + 1)
 								.filter(e => e.type === train.type)) {
 								const sta = k.route.find(g => term.line === g.line);
