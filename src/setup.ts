@@ -128,4 +128,5 @@ while (position[0].line !== "yodosen" || position[0].station) {
 		nextCoord = coords.at(-1) as Coord;
 	}
 }
+if (!fs.existsSync("src/generated")) fs.mkdirSync("src/generated");
 fs.writeFile("src/generated/railway.json", JSON.stringify(output), () => {});
