@@ -11,6 +11,7 @@ body {
 	position: absolute;
 	right: 0;
 	bottom: 0;
+	z-index: 1;
 	padding: 4px;
 	background: #fff9;
 	font-size: 32px;
