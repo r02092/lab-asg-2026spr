@@ -669,7 +669,7 @@ locar.on("gpsupdate", () => {
 					group,
 					loc.longitude + (pathDeltaNormal[1] / 15) * dir,
 					loc.latitude + (pathDeltaNormal[0] / 15) * dir,
-					1.5,
+					1,
 				);
 			});
 		}
