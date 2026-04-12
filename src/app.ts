@@ -480,9 +480,10 @@ locar.on("gpsupdate", () => {
 									} as StationNames
 								)[line][termPos];
 						}
+						const match = j[0].match(/^(.+)__T$/);
 						trains[k].push({
 							time: pTime.slice(-5),
-							number: j[0],
+							number: match ? match[1] : j[0],
 							type: type,
 							name: name,
 							term: term,
