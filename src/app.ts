@@ -422,16 +422,16 @@ locar.on("gpsupdate", () => {
 								type = "特急";
 								switch (j[0]) {
 									case "8073D":
-										name = "立志の抄";
+										name = "立志";
 										break;
 									case "8074D":
-										name = "開花の抄";
+										name = "開花";
 										break;
 									case "8082D":
-										name = "煌海の抄";
+										name = "煌海";
 										break;
 									case "8083D":
-										name = "雄飛の抄";
+										name = "雄飛";
 								}
 								break;
 							default:
@@ -614,6 +614,12 @@ locar.on("gpsupdate", () => {
 								ctx.strokeRect(320, 0, 256, 64);
 								ctx.font = "48px sans-serif";
 								ctx.fillText("ごめん・なはり線", 448, 56, 240);
+							} else if (train.type === "特急") {
+								ctx.font = "32px sans-serif";
+								ctx.fillText("志国土佐 時代の", 400, 32, 160);
+								ctx.fillText("夜明けのものがたり", 400, 64, 160);
+								ctx.font = "48px sans-serif";
+								ctx.fillText(train.name + "の抄", 528, 56, 96);
 							} else {
 								const dirSta = via.find(e => e.line === train.route[0].line)
 									?.name[idx1];
