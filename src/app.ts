@@ -614,8 +614,13 @@ locar.on("gpsupdate", () => {
 							} else {
 								const dirSta = via.find(e => e.line === train.route[0].line)
 									?.name[idx1];
-								if (dirSta) {
-									ctx.fillText(dirSta[0][1], 384, 64, 128);
+								if (dirSta?.length) {
+									ctx.fillText(
+										dirSta[idx1 && dirSta.length - 1][1],
+										384,
+										64,
+										128,
+									);
 									ctx.font = "48px sans-serif";
 									ctx.fillText("方面", 480, 64, 64);
 								}
