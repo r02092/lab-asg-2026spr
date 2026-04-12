@@ -340,7 +340,10 @@ locar.on("gpsupdate", () => {
 					line: i.line,
 					name: [
 						majorSta.filter(e => Number(e[0]) > i.station).slice(0, 2),
-						majorSta.filter(e => Number(e[0]) < i.station).slice(0, 2),
+						majorSta
+							.filter(e => Number(e[0]) < i.station)
+							.toReversed()
+							.slice(0, 2),
 					],
 				});
 				Object.values((timetable as TimeTable)[i.line]).forEach((v, k) => {
@@ -512,7 +515,6 @@ locar.on("gpsupdate", () => {
 						)
 						.map(e => e[1]);
 					viaAll = viaAll.filter((_, i) => !(i % (viaAll.length / 2)));
-					if (idx1) viaAll.reverse();
 					titleCtx.fillText(
 						viaAll.length
 							? viaAll[0]
@@ -616,12 +618,7 @@ locar.on("gpsupdate", () => {
 								const dirSta = via.find(e => e.line === train.route[0].line)
 									?.name[idx1];
 								if (dirSta?.length) {
-									ctx.fillText(
-										dirSta[idx1 && dirSta.length - 1][1],
-										384,
-										64,
-										128,
-									);
+									ctx.fillText(dirSta[0][1], 384, 64, 128);
 									ctx.font = "48px sans-serif";
 									ctx.fillText("方面", 480, 64, 64);
 								}
