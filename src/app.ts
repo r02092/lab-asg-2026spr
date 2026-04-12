@@ -608,9 +608,9 @@ locar.on("gpsupdate", () => {
 								train.route[0].line === "dosansen"
 							) {
 								ctx.strokeStyle = "#fff";
-								ctx.strokeRect(320, 0, 192, 64);
+								ctx.strokeRect(320, 0, 256, 64);
 								ctx.font = "48px sans-serif";
-								ctx.fillText("ごめん・なはり線", 416, 56, 176);
+								ctx.fillText("ごめん・なはり線", 448, 56, 240);
 							} else {
 								const dirSta = via.find(e => e.line === train.route[0].line)
 									?.name[idx1];
@@ -624,17 +624,17 @@ locar.on("gpsupdate", () => {
 									ctx.font = "48px sans-serif";
 									ctx.fillText("方面", 480, 64, 64);
 								}
-							}
-							if (/^[34]\d{3}D$/.test(train.number)) {
-								ctx.font = "32px sans-serif";
-								ctx.fillRect(512, 0, 64, 64);
-								ctx.fillStyle = "#000";
-								if (train.number[0] === "3") {
-									ctx.fillText("2両", 544, 32, 64);
-									ctx.fillText("ワンマン", 544, 64, 64);
-								} else {
-									ctx.fillText("ワン", 544, 32, 64);
-									ctx.fillText("マン", 544, 64, 64);
+								if (/^[34]\d{3}D$/.test(train.number)) {
+									ctx.font = "32px sans-serif";
+									ctx.fillRect(512, 0, 64, 64);
+									ctx.fillStyle = "#000";
+									if (train.number[0] === "3") {
+										ctx.fillText("2両", 544, 32, 64);
+										ctx.fillText("ワンマン", 544, 64, 64);
+									} else {
+										ctx.fillText("ワン", 544, 32, 64);
+										ctx.fillText("マン", 544, 64, 64);
+									}
 								}
 							}
 						}
