@@ -633,7 +633,6 @@ locar.on("gpsupdate", () => {
 							}
 						}
 						ctx.lineWidth = 4;
-						ctx.strokeStyle = "#fff";
 						if (gou) {
 							ctx.font = "64px 'BIZ UDGothic'";
 							ctx.textAlign = "right";
@@ -646,6 +645,7 @@ locar.on("gpsupdate", () => {
 								/^58\d\dD$/.test(train.number) &&
 								train.route[0].line === "dosansen"
 							) {
+								ctx.strokeStyle = typeColor;
 								ctx.strokeRect(320, 0, 256, 64);
 								ctx.font = "48px 'BIZ UDGothic'";
 								ctx.fillText("ごめん・なはり線", 448, 56, 240);
@@ -685,6 +685,7 @@ locar.on("gpsupdate", () => {
 						ctx.font = "64px 'BIZ UDGothic'";
 						ctx.textAlign = "center";
 						if (train.passing) {
+							ctx.strokeStyle = "#fff";
 							ctx.strokeRect(592, 0, 160, 64);
 							ctx.font = "48px 'BIZ UDGothic'";
 							ctx.fillText(train.time, 672, 56, 160);
