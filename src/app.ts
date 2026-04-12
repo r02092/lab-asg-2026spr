@@ -21,6 +21,7 @@ interface Station {
 interface Train {
 	time: string;
 	number: string;
+	passing: boolean;
 	type: string;
 	name: string;
 	term: string;
@@ -391,6 +392,7 @@ locar.on("gpsupdate", () => {
 						const times = train.departure_times;
 						if (!times) continue;
 						let station = i.station / 2;
+						let passing = Boolean(i.station % 2);
 						if (k) station = times.length - station - 1;
 						const pIdx = Math.floor(station);
 						let pTime = times[pIdx];
@@ -403,6 +405,7 @@ locar.on("gpsupdate", () => {
 						const nIdx = Math.ceil(station);
 						let nTime = times[nIdx];
 						if (nTime === null) {
+							passing = true;
 							const n = times.slice(nIdx + 1).find(f => f !== null);
 							if (n) nTime = n;
 							else continue;
@@ -482,9 +485,11 @@ locar.on("gpsupdate", () => {
 								)[line][termPos];
 						}
 						const match = j[0].match(/^(.+)__T$/);
+						if (pTime[0] === "|") passing = true;
 						trains[k].push({
 							time: pTime.slice(-5),
 							number: match ? match[1] : j[0],
+							passing: passing,
 							type: type,
 							name: name,
 							term: term,
@@ -601,6 +606,7 @@ locar.on("gpsupdate", () => {
 							}
 						}
 						ctx.lineWidth = 4;
+						ctx.strokeStyle = "#fff";
 						if (gou) {
 							ctx.font = "64px monospace";
 							ctx.textAlign = "right";
@@ -615,7 +621,6 @@ locar.on("gpsupdate", () => {
 								/^58\d\dD$/.test(train.number) &&
 								train.route[0].line === "dosansen"
 							) {
-								ctx.strokeStyle = "#fff";
 								ctx.strokeRect(320, 0, 256, 64);
 								ctx.font = "48px sans-serif";
 								ctx.fillText("ごめん・なはり線", 448, 56, 240);
@@ -651,6 +656,7 @@ locar.on("gpsupdate", () => {
 						ctx.font = "64px monospace";
 						ctx.textAlign = "center";
 						ctx.textBaseline = "alphabetic";
+						if (train.passing) ctx.strokeRect(592, 0, 160, 64);
 						ctx.fillText(train.time, 672, 56, 160);
 						ctx.fillStyle = "#ff0";
 						ctx.textBaseline = "ideographic";
