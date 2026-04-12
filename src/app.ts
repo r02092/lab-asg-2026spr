@@ -389,6 +389,7 @@ locar.on("gpsupdate", () => {
 						const pIdx = Math.floor(station);
 						let pTime = times[pIdx];
 						if (pTime === null) {
+							if (!pIdx) continue;
 							const p = times.slice(0, pIdx - 1).findLast(f => f !== null);
 							if (p) pTime = p;
 							else continue;
