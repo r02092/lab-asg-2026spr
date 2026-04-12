@@ -1,6 +1,7 @@
 body {
 	position: relative;
 	margin: 0;
+	font-family: "BIZ UDGothic";
 }
 #container {
 	height: 100svh;

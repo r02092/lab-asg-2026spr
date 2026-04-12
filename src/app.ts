@@ -105,7 +105,7 @@ for (const i of spots) {
 	spCtx.fillStyle = "#fff";
 	spCtx.fillRect(0, 0, spCtx.canvas.width, spCtx.canvas.height);
 	spCtx.fillStyle = "#000";
-	spCtx.font = "256px sans-serif";
+	spCtx.font = "256px 'BIZ UDGothic'";
 	spCtx.fillText(
 		i.name,
 		(spCtx.canvas.width - spCtx.measureText(i.name).width) / 2,
@@ -517,7 +517,7 @@ locar.on("gpsupdate", () => {
 				titleCtx.fillStyle = "#777";
 				titleCtx.fillRect(0, 0, titleCtx.canvas.width, titleCtx.canvas.height);
 				titleCtx.fillStyle = "#fff";
-				titleCtx.font = "64px sans-serif";
+				titleCtx.font = "700 64px 'BIZ UDGothic'";
 				titleCtx.textAlign = "center";
 				titleCtx.textBaseline = "ideographic";
 				if (via[0].name[idx1]) {
@@ -542,9 +542,9 @@ locar.on("gpsupdate", () => {
 						titleCtx.fillText(viaAll[1], 256, 112, 128);
 					}
 				}
-				titleCtx.font = "48px sans-serif";
+				titleCtx.font = "700 48px 'BIZ UDGothic'";
 				titleCtx.fillText("方面", 376, 112, 96);
-				titleCtx.font = "64px sans-serif";
+				titleCtx.font = "700 64px 'BIZ UDGothic'";
 				titleCtx.fillText("発車時刻", 576, 112, 256);
 				const title = createMesh(
 					new THREE.CanvasTexture(titleCanvas),
@@ -564,10 +564,11 @@ locar.on("gpsupdate", () => {
 					ctx.canvas.height = 64;
 					if (j < i.length) {
 						const train = i[j];
-						ctx.font = "64px monospace";
+						ctx.font = "64px 'BIZ UDGothic'";
 						ctx.fillStyle = "#fff";
 						ctx.textAlign = "right";
-						ctx.fillText(train.number, 160, 56, 160);
+						ctx.textBaseline = "ideographic";
+						ctx.fillText(train.number, 160, 64, 160);
 						let typeColor = "";
 						switch (train.type) {
 							case "回送":
@@ -582,14 +583,13 @@ locar.on("gpsupdate", () => {
 						ctx.fillStyle = typeColor;
 						if (typeColor.length) ctx.fillRect(176, 0, 128, 64);
 						ctx.fillStyle = "#fff";
-						ctx.font = "64px sans-serif";
+						ctx.font = "64px 'BIZ UDGothic'";
 						ctx.textAlign = "center";
-						ctx.textBaseline = "ideographic";
 						ctx.fillText(train.type, 240, 64, 128);
 						ctx.fillStyle = typeColor;
 						let gou = "";
 						if (/^88\d\dD$/.test(train.number)) {
-							ctx.font = "32px sans-serif";
+							ctx.font = "32px 'BIZ UDGothic'";
 							ctx.textAlign = "left";
 							ctx.fillText("しまん", 320, 32, 128);
 							ctx.fillText("トロッコ", 320, 64, 128);
@@ -610,13 +610,11 @@ locar.on("gpsupdate", () => {
 						ctx.lineWidth = 4;
 						ctx.strokeStyle = "#fff";
 						if (gou) {
-							ctx.font = "64px monospace";
+							ctx.font = "64px 'BIZ UDGothic'";
 							ctx.textAlign = "right";
-							ctx.textBaseline = "alphabetic";
-							ctx.fillText(gou, 512, 56, 64);
-							ctx.font = "64px sans-serif";
+							ctx.fillText(gou, 512, 64, 64);
+							ctx.font = "64px 'BIZ UDGothic'";
 							ctx.textAlign = "left";
-							ctx.textBaseline = "ideographic";
 							ctx.fillText("号", 512, 64, 64);
 						} else {
 							if (
@@ -624,13 +622,13 @@ locar.on("gpsupdate", () => {
 								train.route[0].line === "dosansen"
 							) {
 								ctx.strokeRect(320, 0, 256, 64);
-								ctx.font = "48px sans-serif";
+								ctx.font = "48px 'BIZ UDGothic'";
 								ctx.fillText("ごめん・なはり線", 448, 56, 240);
 							} else if (train.type === "特急") {
-								ctx.font = "32px sans-serif";
+								ctx.font = "32px 'BIZ UDGothic'";
 								ctx.fillText("志国土佐 時代の", 400, 32, 160);
 								ctx.fillText("夜明けのものがたり", 400, 64, 160);
-								ctx.font = "48px sans-serif";
+								ctx.font = "48px 'BIZ UDGothic'";
 								ctx.fillText(train.name + "の抄", 528, 56, 96);
 							} else {
 								if (train.end) {
@@ -640,12 +638,12 @@ locar.on("gpsupdate", () => {
 										?.name[idx1];
 									if (dirSta?.length) {
 										ctx.fillText(dirSta[0][1], 384, 64, 128);
-										ctx.font = "48px sans-serif";
+										ctx.font = "48px 'BIZ UDGothic'";
 										ctx.fillText("方面", 480, 64, 64);
 									}
 								}
 								if (/^[34]\d{3}D$/.test(train.number)) {
-									ctx.font = "32px sans-serif";
+									ctx.font = "32px 'BIZ UDGothic'";
 									ctx.fillRect(512, 0, 64, 64);
 									ctx.fillStyle = "#000";
 									if (train.number[0] === "3") {
@@ -659,13 +657,16 @@ locar.on("gpsupdate", () => {
 							}
 						}
 						ctx.fillStyle = "#fff";
-						ctx.font = "64px monospace";
+						ctx.font = "64px 'BIZ UDGothic'";
 						ctx.textAlign = "center";
-						ctx.textBaseline = "alphabetic";
-						if (train.passing) ctx.strokeRect(592, 0, 160, 64);
-						ctx.fillText(train.time, 672, 56, 160);
+						if (train.passing) {
+							ctx.strokeRect(592, 0, 160, 64);
+							ctx.font = "48px 'BIZ UDGothic'";
+							ctx.fillText(train.time, 672, 56, 160);
+						} else {
+							ctx.fillText(train.time, 672, 64, 160);
+						}
 						ctx.fillStyle = "#ff0";
-						ctx.textBaseline = "ideographic";
 						let notLast = false;
 						const term = train.route.at(-1);
 						if (term)
@@ -679,12 +680,12 @@ locar.on("gpsupdate", () => {
 								}
 							}
 						if (notLast) {
-							ctx.font = "64px sans-serif";
+							ctx.font = "64px 'BIZ UDGothic'";
 							ctx.fillText(train.term, 896, 64, 256);
 						} else {
 							ctx.strokeStyle = "#ff0";
 							ctx.strokeRect(768, 0, 256, 64);
-							ctx.font = "48px sans-serif";
+							ctx.font = "48px 'BIZ UDGothic'";
 							ctx.fillText(train.term, 896, 56, 240);
 						}
 					}
