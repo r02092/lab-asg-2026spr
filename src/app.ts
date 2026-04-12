@@ -530,7 +530,7 @@ locar.on("gpsupdate", () => {
 				group.add(
 					new THREE.Mesh(
 						new THREE.BoxGeometry(1.7, 0.7, 0.3),
-						new THREE.MeshLambertMaterial({color: 0x777777}),
+						new THREE.MeshLambertMaterial({color: 0x555555}),
 					),
 				);
 				const titleCanvas = document.createElement("canvas");
@@ -539,7 +539,7 @@ locar.on("gpsupdate", () => {
 				) as CanvasRenderingContext2D;
 				titleCtx.canvas.width = 704;
 				titleCtx.canvas.height = 160;
-				titleCtx.fillStyle = "#777";
+				titleCtx.fillStyle = "#555";
 				titleCtx.fillRect(0, 0, titleCtx.canvas.width, titleCtx.canvas.height);
 				titleCtx.fillStyle = "#fff";
 				titleCtx.font = "700 64px 'BIZ UDGothic'";
