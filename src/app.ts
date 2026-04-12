@@ -26,6 +26,7 @@ interface Train {
 	name: string;
 	term: string;
 	route: Station[];
+	end: boolean;
 }
 interface PnTrain {
 	line_id: string;
@@ -494,6 +495,7 @@ locar.on("gpsupdate", () => {
 							name: name,
 							term: term,
 							route: route,
+							end: route.length === 1 && route[0].station === i.station / 2,
 						});
 					}
 				});
@@ -631,12 +633,16 @@ locar.on("gpsupdate", () => {
 								ctx.font = "48px sans-serif";
 								ctx.fillText(train.name + "の抄", 528, 56, 96);
 							} else {
-								const dirSta = via.find(e => e.line === train.route[0].line)
-									?.name[idx1];
-								if (dirSta?.length) {
-									ctx.fillText(dirSta[0][1], 384, 64, 128);
-									ctx.font = "48px sans-serif";
-									ctx.fillText("方面", 480, 64, 64);
+								if (train.end) {
+									ctx.fillText("当駅止まり", 416, 64, 192);
+								} else {
+									const dirSta = via.find(e => e.line === train.route[0].line)
+										?.name[idx1];
+									if (dirSta?.length) {
+										ctx.fillText(dirSta[0][1], 384, 64, 128);
+										ctx.font = "48px sans-serif";
+										ctx.fillText("方面", 480, 64, 64);
+									}
 								}
 								if (/^[34]\d{3}D$/.test(train.number)) {
 									ctx.font = "32px sans-serif";
