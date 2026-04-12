@@ -12,7 +12,8 @@ type KochiTrainLine =
 	| "tosa_gomensen"
 	| "tosa_nakamurasen"
 	| "yodosen"
-	| "yosansen";
+	| "yosansen"
+	| "yosansen_uchikosen";
 interface Station {
 	line: KochiTrainLine;
 	station: number;
@@ -244,6 +245,7 @@ const staNameMajor: StationNames = {
 		99: "窪川",
 	},
 	yosansen: {},
+	yosansen_uchikosen: {},
 };
 const timeToMinute = (h: number, m: number) => (h < 4 ? h + 24 : h) * 60 + m;
 const oldGroups: THREE.Group<THREE.Object3DEventMap>[] = [];
@@ -474,6 +476,7 @@ locar.on("gpsupdate", () => {
 										tosa_nakamurasen: {},
 										yodosen: {12: "近永", 24: "江川崎"},
 										yosansen: {112: "高松"},
+										yosansen_uchikosen: {0: "宇和島"},
 									} as StationNames
 								)[line][termPos];
 						}
