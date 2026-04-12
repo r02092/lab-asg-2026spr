@@ -17,6 +17,10 @@ body {
 	background: #fff9;
 	font-size: 32px;
 }
+.spot-name {
+	display: none;
+	writing-mode: vertical-rl;
+}
 .scanning {
 	display: none;
 }

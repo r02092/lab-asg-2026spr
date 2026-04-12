@@ -79,6 +79,7 @@ const name = location.search.slice(1);
 const locarScene = new THREE.Scene();
 locarScene.add(new THREE.AmbientLight(0xffffff, 2.0));
 locarScene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 2.0));
+locarScene.fog = new THREE.Fog(0xffffff, 50, 100000);
 const locarCamera = new THREE.PerspectiveCamera(
 	60,
 	window.innerWidth / window.innerHeight,
@@ -99,26 +100,50 @@ const elevZoom = 15;
 const elevTileSize = 256;
 for (const i of spots) {
 	const spCanvas = document.createElement("canvas");
+	spCanvas.className = "spot-name";
+	document.body.appendChild(spCanvas);
 	const spCtx = spCanvas.getContext("2d") as CanvasRenderingContext2D;
-	spCtx.canvas.width = 2048;
-	spCtx.canvas.height = 256;
+	spCtx.canvas.width = 1280;
+	spCtx.canvas.height = 128;
+	spCtx.beginPath();
+	spCtx.arc(
+		spCtx.canvas.height / 2,
+		spCtx.canvas.height / 2,
+		spCtx.canvas.height / 2,
+		Math.PI / 2,
+		(Math.PI * 3) / 2,
+	);
+	spCtx.arc(
+		spCtx.canvas.width - spCtx.canvas.height / 2,
+		spCtx.canvas.height / 2,
+		spCtx.canvas.height / 2,
+		(Math.PI * 3) / 2,
+		Math.PI / 2,
+	);
+	spCtx.closePath();
 	spCtx.fillStyle = "#fff";
-	spCtx.fillRect(0, 0, spCtx.canvas.width, spCtx.canvas.height);
-	spCtx.fillStyle = "#000";
-	spCtx.font = "256px 'BIZ UDGothic'";
+	spCtx.fill();
+	spCtx.fillStyle = "#333";
+	spCtx.font = "700 128px 'BIZ UDGothic'";
+	spCtx.textAlign = "center";
+	spCtx.textBaseline = "bottom";
 	spCtx.fillText(
 		i.name,
-		(spCtx.canvas.width - spCtx.measureText(i.name).width) / 2,
-		(spCtx.canvas.height + spCtx.measureText(i.name).actualBoundingBoxAscent) /
-			2,
+		spCtx.canvas.width / 2,
+		spCtx.canvas.height,
+		spCtx.canvas.width - spCtx.canvas.height,
 	);
+	const texture = new THREE.CanvasTexture(spCanvas);
+	texture.colorSpace = THREE.SRGBColorSpace;
+	texture.center.set(0.5, 0.5);
+	texture.rotation = -Math.PI / 2;
 	const sprite = new THREE.Sprite(
 		new THREE.SpriteMaterial({
-			map: new THREE.CanvasTexture(spCanvas),
+			map: texture,
 			sizeAttenuation: false,
 		}),
 	);
-	sprite.scale.set(0.5, (spCtx.canvas.height * 0.5) / spCtx.canvas.width, 1);
+	sprite.scale.set(0.03, 0.3, 1);
 	const elevCanvas = document.createElement("canvas");
 	elevCanvas.width = elevCanvas.height = elevTileSize;
 	const elevCtx = elevCanvas.getContext("2d", {
