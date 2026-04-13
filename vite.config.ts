@@ -1,5 +1,6 @@
 import {defineConfig} from "vite";
 
-export default defineConfig(() => {
-	return {assetsInclude: ["**/*.mind", "**/*.mkv"]};
+export default defineConfig({
+	assetsInclude: ["**/*.mind", "**/*.mkv"],
+	map: "/lab-asg-2026spr/",
 });
