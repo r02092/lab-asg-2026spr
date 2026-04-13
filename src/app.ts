@@ -75,7 +75,7 @@ const createMesh = (
 				}),
 	);
 };
-const name = location.search.slice(1);
+const name = location.hash.slice(1);
 const locarScene = new THREE.Scene();
 locarScene.add(new THREE.AmbientLight(0xffffff, 2.0));
 locarScene.add(new THREE.HemisphereLight(0xffffff, 0x000000, 2.0));
