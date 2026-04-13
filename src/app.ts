@@ -520,7 +520,10 @@ locar.on("gpsupdate", () => {
 								name: name,
 								term: term,
 								route: route,
-								end: route.length === 1 && route[0].station === i.station / 2,
+								end:
+									route.length === 1 &&
+									route[0].station ===
+										(k ? times.length - i.station / 2 - 1 : i.station / 2),
 							});
 						}
 					}
