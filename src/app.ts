@@ -414,114 +414,115 @@ locar.on("gpsupdate", () => {
 								)
 									continue;
 						}
-						let train = j[1][0];
-						const times = train.departure_times;
-						if (!times) continue;
-						let station = i.station / 2;
-						let passing = Boolean(i.station % 2);
-						if (k) station = times.length - station - 1;
-						const pIdx = Math.floor(station);
-						let pTime = times[pIdx];
-						if (pTime === null) {
-							if (!pIdx) continue;
-							const p = times.slice(0, pIdx - 1).findLast(f => f !== null);
-							if (p) pTime = p;
-							else continue;
+						for (let train of j[1]) {
+							const times = train.departure_times;
+							if (!times) continue;
+							let station = i.station / 2;
+							let passing = Boolean(i.station % 2);
+							if (k) station = times.length - station - 1;
+							const pIdx = Math.floor(station);
+							let pTime = times[pIdx];
+							if (pTime === null) {
+								if (!pIdx) continue;
+								const p = times.slice(0, pIdx - 1).findLast(f => f !== null);
+								if (p) pTime = p;
+								else continue;
+							}
+							const nIdx = Math.ceil(station);
+							let nTime = times[nIdx];
+							if (nTime === null) {
+								passing = true;
+								const n = times.slice(nIdx + 1).find(f => f !== null);
+								if (n) nTime = n;
+								else continue;
+							}
+							const timeNum = nTime.slice(-5).split(":").map(Number);
+							if (
+								timeToMinute(timeNum[0], timeNum[1]) <
+								timeToMinute(now.getHours(), now.getMinutes())
+							)
+								continue;
+							let type: string;
+							let name = "";
+							switch (train.train_type) {
+								case "回送":
+								case "快速":
+								case "普通":
+									type = train.train_type;
+									break;
+								case "夜明け":
+									type = "特急";
+									switch (j[0]) {
+										case "8073D":
+											name = "立志";
+											break;
+										case "8074D":
+											name = "開花";
+											break;
+										case "8082D":
+											name = "煌海";
+											break;
+										case "8083D":
+											name = "雄飛";
+									}
+									break;
+								default:
+									type = /^(20)?\d\dD$/.test(j[0]) ? "特急" : "普通";
+									name = train.train_type;
+							}
+							let line = i.line;
+							const route: Station[] = [];
+							while (train.next_trains.length) {
+								const lastSta = train.departure_times?.findLastIndex(
+									e => e !== null,
+								);
+								if (lastSta) route.push({line: line, station: lastSta});
+								const next = train.next_trains[0];
+								const foundTrain = (timetable as TimeTable)[next.line_id][
+									next.direction + "_trains"
+								][next.train_number].find(
+									e => e.starting_station === next.starting_station,
+								);
+								if (foundTrain) {
+									train = foundTrain;
+									line = next.line_id as KochiTrainLine;
+								} else break;
+							}
+							const timesLast = train.departure_times;
+							let term = "不明";
+							if (timesLast) {
+								let termPos = timesLast.findLastIndex(f => f !== null);
+								route.push({line: line, station: termPos});
+								if (k) termPos = timesLast.length - termPos - 1;
+								termPos *= 2;
+								term = staNameMajor[line][termPos];
+								if (!term)
+									term = (
+										{
+											dosansen: {4: "土佐一宮"},
+											dosansen_susaki: {40: "伊野"},
+											seto_ohashisen: {24: "岡山"},
+											tosa_gomensen: {10: "あかおか"},
+											tosa_nakamurasen: {},
+											yodosen: {12: "近永", 24: "江川崎"},
+											yosansen: {112: "高松"},
+											yosansen_uchikosen: {0: "宇和島"},
+										} as StationNames
+									)[line][termPos];
+							}
+							const match = j[0].match(/^(.+)__T$/);
+							if (pTime[0] === "|") passing = true;
+							trains[k].push({
+								time: pTime.slice(-5),
+								number: match ? match[1] : j[0],
+								passing: passing,
+								type: type,
+								name: name,
+								term: term,
+								route: route,
+								end: route.length === 1 && route[0].station === i.station / 2,
+							});
 						}
-						const nIdx = Math.ceil(station);
-						let nTime = times[nIdx];
-						if (nTime === null) {
-							passing = true;
-							const n = times.slice(nIdx + 1).find(f => f !== null);
-							if (n) nTime = n;
-							else continue;
-						}
-						const timeNum = nTime.slice(-5).split(":").map(Number);
-						if (
-							timeToMinute(timeNum[0], timeNum[1]) <
-							timeToMinute(now.getHours(), now.getMinutes())
-						)
-							continue;
-						let type: string;
-						let name = "";
-						switch (train.train_type) {
-							case "回送":
-							case "快速":
-							case "普通":
-								type = train.train_type;
-								break;
-							case "夜明け":
-								type = "特急";
-								switch (j[0]) {
-									case "8073D":
-										name = "立志";
-										break;
-									case "8074D":
-										name = "開花";
-										break;
-									case "8082D":
-										name = "煌海";
-										break;
-									case "8083D":
-										name = "雄飛";
-								}
-								break;
-							default:
-								type = /^(20)?\d\dD$/.test(j[0]) ? "特急" : "普通";
-								name = train.train_type;
-						}
-						let line = i.line;
-						const route: Station[] = [];
-						while (train.next_trains.length) {
-							const lastSta = train.departure_times?.findLastIndex(
-								e => e !== null,
-							);
-							if (lastSta) route.push({line: line, station: lastSta});
-							const next = train.next_trains[0];
-							const foundTrain = (timetable as TimeTable)[next.line_id][
-								next.direction + "_trains"
-							][next.train_number].find(
-								e => e.starting_station === next.starting_station,
-							);
-							if (foundTrain) {
-								train = foundTrain;
-								line = next.line_id as KochiTrainLine;
-							} else break;
-						}
-						const timesLast = train.departure_times;
-						let term = "不明";
-						if (timesLast) {
-							let termPos = timesLast.findLastIndex(f => f !== null);
-							route.push({line: line, station: termPos});
-							if (k) termPos = timesLast.length - termPos - 1;
-							termPos *= 2;
-							term = staNameMajor[line][termPos];
-							if (!term)
-								term = (
-									{
-										dosansen: {4: "土佐一宮"},
-										dosansen_susaki: {40: "伊野"},
-										seto_ohashisen: {24: "岡山"},
-										tosa_gomensen: {10: "あかおか"},
-										tosa_nakamurasen: {},
-										yodosen: {12: "近永", 24: "江川崎"},
-										yosansen: {112: "高松"},
-										yosansen_uchikosen: {0: "宇和島"},
-									} as StationNames
-								)[line][termPos];
-						}
-						const match = j[0].match(/^(.+)__T$/);
-						if (pTime[0] === "|") passing = true;
-						trains[k].push({
-							time: pTime.slice(-5),
-							number: match ? match[1] : j[0],
-							passing: passing,
-							type: type,
-							name: name,
-							term: term,
-							route: route,
-							end: route.length === 1 && route[0].station === i.station / 2,
-						});
 					}
 				});
 			}
