@@ -408,8 +408,10 @@ locar.on("gpsupdate", () => {
 							case "8816D":
 							case "8821D":
 								if (
-									!isDates[3] ||
-									(!isDates[0] && now.getDay() !== 0 && now.getDay() !== 6) ||
+									(!isDates[0] &&
+										!isDates[3] &&
+										now.getDay() !== 0 &&
+										now.getDay() !== 6) ||
 									now.getMonth() === 6
 								)
 									continue;
