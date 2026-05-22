@@ -728,7 +728,8 @@ locar.on("gpsupdate", () => {
 					mesh.rotation.x = mesh.rotation.z = Math.PI;
 					group.add(mesh);
 				}
-				const dir = idx1 * 2 - 1;
+				let dir = idx1 * 2 - 1;
+				if (nearest.position[0].line === "yodosen") dir = -dir;
 				group.rotation.y =
 					Math.atan2(pathDelta[0], pathDelta[1]) + (Math.PI / 2) * dir;
 				oldGroups.push(group);
