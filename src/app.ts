@@ -648,7 +648,7 @@ locar.on("gpsupdate", () => {
 								/^58\d\dD$/.test(train.number) &&
 								train.route[0].line === "dosansen"
 							) {
-								ctx.strokeStyle = typeColor;
+								ctx.strokeStyle = typeColor !== "" ? typeColor : "#fff";
 								ctx.strokeRect(320, 0, 256, 64);
 								ctx.font = "48px 'BIZ UDGothic'";
 								ctx.fillText("ごめん・なはり線", 448, 56, 240);
