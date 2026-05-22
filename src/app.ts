@@ -674,7 +674,13 @@ locar.on("gpsupdate", () => {
 									ctx.font = "32px 'BIZ UDGothic'";
 									ctx.fillRect(512, 0, 64, 64);
 									ctx.fillStyle = "#000";
-									if (train.number[0] === "3") {
+									if (
+										((!isDates[0] &&
+											now.getDay() !== 0 &&
+											now.getDay() !== 6) ||
+											train.number[1] !== "8") &&
+										train.number[0] === "3"
+									) {
 										ctx.fillText("2両", 544, 32, 64);
 										ctx.fillText("ワンマン", 544, 64, 64);
 									} else {
