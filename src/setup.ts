@@ -116,10 +116,13 @@ while (position[0].line !== "yodosen" || position[0].station) {
 		let coords = paths[0].geometry.coordinates;
 		prev = [coords[1]];
 		if (!equalCoord(coords[0], nextCoord)) coords = coords.toReversed();
+		const pushPos = structuredClone(position);
+		if (position[0].line === "tosa_nakamurasen" && position[0].station === 40)
+			pushPos[0].station = 39;
 		for (let i = 0; i < coords.length - 1; i++) {
 			output.push({
 				coords: [coords[i], coords[i + 1]].map(e => e.toReversed()),
-				position: structuredClone(position),
+				position: pushPos,
 			});
 		}
 		if (!link && position.length - 1) position.shift();
