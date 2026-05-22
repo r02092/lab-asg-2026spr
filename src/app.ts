@@ -405,16 +405,6 @@ locar.on("gpsupdate", () => {
 							case "8083D":
 								if (!isDates[2]) continue;
 								break;
-							case "8816D":
-							case "8821D":
-								if (
-									(!isDates[0] &&
-										!isDates[3] &&
-										now.getDay() !== 0 &&
-										now.getDay() !== 6) ||
-									now.getMonth() === 6
-								)
-									continue;
 						}
 						for (let train of j[1]) {
 							const times = train.departure_times;
@@ -619,7 +609,14 @@ locar.on("gpsupdate", () => {
 						ctx.fillText(train.type, 240, 64, 128);
 						ctx.fillStyle = typeColor;
 						let gou = "";
-						if (/^88\d\dD$/.test(train.number)) {
+						if (
+							(isDates[0] ||
+								isDates[3] ||
+								now.getDay() === 0 ||
+								now.getDay() === 6) &&
+							/^88\d\dD$/.test(train.number) &&
+							now.getMonth() !== 6
+						) {
 							ctx.font = "32px 'BIZ UDGothic'";
 							ctx.textAlign = "left";
 							ctx.fillText("しまん", 320, 32, 128);
@@ -673,7 +670,7 @@ locar.on("gpsupdate", () => {
 										ctx.fillText("方面", 480, 64, 64);
 									}
 								}
-								if (/^[34]\d{3}D$/.test(train.number)) {
+								if (/^([34]\d|88)\d\dD$/.test(train.number)) {
 									ctx.font = "32px 'BIZ UDGothic'";
 									ctx.fillRect(512, 0, 64, 64);
 									ctx.fillStyle = "#000";
