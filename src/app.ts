@@ -377,7 +377,7 @@ locar.on("gpsupdate", () => {
 				});
 				Object.values((timetable as TimeTable)[i.line]).forEach((v, k) => {
 					for (const j of Object.entries(v)) {
-						if (/^回?9\d{3}D$/.test(j[0])) continue;
+						if (/^回?9\d{3}D(__.+)?$/.test(j[0])) continue;
 						if (trains[k].find(e => e.number === j[0])) continue;
 						switch (j[0]) {
 							case "4743D":
