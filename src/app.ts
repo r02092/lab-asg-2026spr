@@ -275,6 +275,42 @@ const staNameMajor: StationNames = {
 	yosansen_uchikosen: {},
 };
 const timeToMinute = (h: number, m: number) => (h < 4 ? h + 24 : h) * 60 + m;
+const getIsDates = (d: Date) => {
+	return [
+		{
+			3: [29],
+			4: [4, 5, 6],
+			5: [],
+			6: [20],
+			7: [11],
+			8: [21, 22, 23],
+		},
+		{
+			3: [10, 24],
+			4: [22, 29],
+			5: [12, 26],
+			6: [31],
+			7: [7, 21],
+			8: [4],
+		},
+		{
+			3: [17, 29],
+			4: [9, 15],
+			5: [5, 20],
+			6: [18, 24],
+			7: [14, 29],
+			8: [11, 26],
+		},
+		{
+			3: [],
+			4: [],
+			5: [],
+			6: [],
+			7: [10, 12, 13, 14],
+			8: [],
+		},
+	].map(e => e[d.getMonth() as 3 | 4 | 5 | 6 | 7 | 8].includes(d.getDate()));
+};
 const oldGroups: THREE.Group<THREE.Object3DEventMap>[] = [];
 locar.on("gpsupdate", () => {
 	const loc = locar.getLastKnownLocation();
@@ -327,42 +363,7 @@ locar.on("gpsupdate", () => {
 				name: [[string, string][] | undefined, [string, string][] | undefined];
 			}[] = [];
 			const now = new Date();
-			const isDates = [
-				{
-					3: [29],
-					4: [4, 5, 6],
-					5: [],
-					6: [20],
-					7: [11],
-					8: [21, 22, 23],
-				},
-				{
-					3: [10, 24],
-					4: [22, 29],
-					5: [12, 26],
-					6: [31],
-					7: [7, 21],
-					8: [4],
-				},
-				{
-					3: [17, 29],
-					4: [9, 15],
-					5: [5, 20],
-					6: [18, 24],
-					7: [14, 29],
-					8: [11, 26],
-				},
-				{
-					3: [],
-					4: [],
-					5: [],
-					6: [],
-					7: [10, 12, 13, 14],
-					8: [],
-				},
-			].map(e =>
-				e[now.getMonth() as 3 | 4 | 5 | 6 | 7 | 8].includes(now.getDate()),
-			);
+			const isDates = getIsDates(now);
 			for (const i of nearest.position) {
 				const majorSta = Object.entries(staNameMajor[i.line]);
 				via.push({
@@ -387,11 +388,14 @@ locar.on("gpsupdate", () => {
 							case "5844D":
 							case "5849D":
 							case "5850D":
+							case "回4758D":
 								if (isDates[0] || now.getDay() === 0 || now.getDay() === 6)
 									continue;
 								break;
 							case "8073D":
 							case "8074D":
+							case "回8073D":
+							case "回8074D":
 								if (
 									(!isDates[0] || now.getDay() === 3) &&
 									(isDates[2] || now.getDay() !== 6) &&
@@ -402,8 +406,21 @@ locar.on("gpsupdate", () => {
 								break;
 							case "8082D":
 							case "8083D":
+							case "回8082D":
+							case "回8083D":
 								if (!isDates[2]) continue;
 								break;
+							case "回3259D": {
+								const tmr = structuredClone(now);
+								tmr.setDate(now.getDate() + 1);
+								const isDatesTmr = getIsDates(tmr);
+								if (!isDatesTmr[0] && tmr.getDay() !== 0 && tmr.getDay() !== 6)
+									continue;
+								break;
+							}
+							case "回4740D":
+								if (!isDates[0] && now.getDay() !== 0 && now.getDay() !== 6)
+									continue;
 						}
 						for (let train of j[1]) {
 							const times = train.departure_times;
