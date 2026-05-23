@@ -380,7 +380,6 @@ locar.on("gpsupdate", () => {
 						if (/^回?9\d{3}D$/.test(j[0])) continue;
 						if (trains[k].find(e => e.number === j[0])) continue;
 						switch (j[0]) {
-							case "4214D":
 							case "4743D":
 							case "4748D":
 							case "4749D":
